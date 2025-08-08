@@ -7,14 +7,18 @@ RUN npm install -g pnpm
 # Set the working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first
 COPY package.json pnpm-lock.yaml* ./
 
-# Install all dependencies (including dev dependencies)
-RUN pnpm install --frozen-lockfile
+# Copy TypeScript configuration files (needed for build)
+COPY tsconfig.json tsconfig.scripts.json ./
 
-# Copy source code
+# Copy source code (needed for the prepare script)
 COPY . .
+
+# Install all dependencies (including dev dependencies)
+# Skip the prepare script to avoid build issues in development
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Expose the port
 EXPOSE 3000

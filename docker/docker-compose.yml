@@ -6,11 +6,13 @@ services:
     image: mysql:8.0
     container_name: mcp-mysql-db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: simlexadmin
-      MYSQL_DATABASE: adcomat
-      MYSQL_USER: mcpuser
-      MYSQL_PASSWORD: mcppassword
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-simlexadmin}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-adcomat}
+      MYSQL_USER: ${MYSQL_USER:-mcpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mcppassword}
     ports:
       - "3306:3306"
     volumes:
@@ -63,18 +65,18 @@ services:
       MYSQL_CACHE_TTL: 60000
       
       # Security settings
-      MYSQL_RATE_LIMIT: 100
-      MYSQL_MAX_QUERY_COMPLEXITY: 1000
+      MYSQL_RATE_LIMIT: ${MYSQL_RATE_LIMIT:-100}
+      MYSQL_MAX_QUERY_COMPLEXITY: ${MYSQL_MAX_QUERY_COMPLEXITY:-1000}
       
       # Monitoring settings
-      ENABLE_LOGGING: true
-      MYSQL_LOG_LEVEL: info
-      MYSQL_METRICS_ENABLED: false
+      ENABLE_LOGGING: ${ENABLE_LOGGING:-true}
+      MYSQL_LOG_LEVEL: ${MYSQL_LOG_LEVEL:-info}
+      MYSQL_METRICS_ENABLED: ${MYSQL_METRICS_ENABLED:-false}
       
       # Remote MCP configuration
-      IS_REMOTE_MCP: true
-      PORT: 3000
-      REMOTE_SECRET_KEY: docker-secret-key
+      IS_REMOTE_MCP: ${IS_REMOTE_MCP:-true}
+      PORT: ${PORT:-3000}
+      REMOTE_SECRET_KEY: ${REMOTE_SECRET_KEY:-docker-secret-key}
     ports:
       - "3000:3000"
     depends_on:
