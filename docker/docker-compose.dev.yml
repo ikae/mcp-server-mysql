@@ -1,0 +1,43 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  mcp-server:
+    # For development, mount source code and use tsx for hot reload
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ..:/app
+      - /app/node_modules
+      - ../logs:/app/logs
+    environment:
+      NODE_ENV: development
+      ENABLE_LOGGING: true
+      MYSQL_LOG_LEVEL: debug
+    command: ["npm", "run", "dev"]
+
+  mysql:
+    # Development: expose more ports and add test database
+    environment:
+      MYSQL_DATABASE: adcomat
+      # Create additional test database
+      MYSQL_TEST_DATABASE: mcp_test_db
+    ports:
+      - "3306:3306"
+      - "33060:33060"  # MySQL X Protocol port
+
+  # Add a MySQL CLI container for development
+  mysql-cli:
+    image: mysql:8.0
+    container_name: mcp-mysql-cli
+    networks:
+      - mcp-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: tail -f /dev/null  # Keep container running
+    volumes:
+      - ../sql-scripts:/scripts

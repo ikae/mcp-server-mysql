@@ -97,14 +97,14 @@ log(
     {
       ...(process.env.MYSQL_SOCKET_PATH
         ? {
-            socketPath: process.env.MYSQL_SOCKET_PATH,
-            connectionType: "Unix Socket",
-          }
+          socketPath: process.env.MYSQL_SOCKET_PATH,
+          connectionType: "Unix Socket",
+        }
         : {
-            host: process.env.MYSQL_HOST || "127.0.0.1",
-            port: process.env.MYSQL_PORT || "3306",
-            connectionType: "TCP/IP",
-          }),
+          host: process.env.MYSQL_HOST || "127.0.0.1",
+          port: process.env.MYSQL_PORT || "3306",
+          connectionType: "TCP/IP",
+        }),
       user: config.mysql.user,
       password: config.mysql.password ? "******" : "not set",
       database: config.mysql.database || "MULTI_DB_MODE",
@@ -163,9 +163,8 @@ export default function createMcpServer({
       log("info", "Handling ListResourcesRequest");
       const connectionInfo = process.env.MYSQL_SOCKET_PATH
         ? `socket: ${process.env.MYSQL_SOCKET_PATH}`
-        : `host: ${process.env.MYSQL_HOST || "localhost"}, port: ${
-            process.env.MYSQL_PORT || 3306
-          }`;
+        : `host: ${process.env.MYSQL_HOST || "localhost"}, port: ${process.env.MYSQL_PORT || 3306
+        }`;
       log("info", `Connection info: ${connectionInfo}`);
 
       // Query to get all tables
@@ -402,7 +401,8 @@ const isMainModule = () => {
 };
 
 // Start the server if this file is being run directly
-if (isMainModule()) {
+// if (isMainModule()) {
+if (true) {
   log("info", "Running in standalone mode");
 
   // Start the server

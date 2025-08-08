@@ -9,6 +9,7 @@ A Model Context Protocol server that provides access to MySQL databases. This se
 - [Installation](#installation)
   - [Smithery](#using-smithery)
   - [Clone to Local Repository](#running-from-local-repository)
+  - [Docker Setup](#docker-setup)
   - [Remote mode](#run-in-remote-mode)
 - [Components](#components)
 - [Configuration](#configuration)
@@ -290,6 +291,58 @@ If you want to clone and run this MCP server directly from the source code, foll
    ```
 
    If it connects to MySQL successfully, you're ready to use it with Claude Desktop.
+
+### Docker Setup
+
+For containerized deployment, all Docker-related files are located in the `docker/` directory.
+
+#### Quick Start with Docker
+
+**Development Mode:**
+```bash
+npm run docker:dev
+```
+
+**Production Mode:**
+```bash
+npm run docker:prod
+```
+
+This will start:
+- **MySQL Database** on port `3306`
+- **MCP Server** on port `3000` 
+- **phpMyAdmin** on port `8080` (development only)
+
+#### Manual Docker Commands
+
+```bash
+# Navigate to docker directory
+cd docker
+
+# Development with hot reload
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# Production deployment
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# View logs
+docker-compose logs -f mcp-server
+
+# Stop services
+docker-compose down
+```
+
+#### Environment Configuration
+
+Create `docker/.env.local` to override default settings:
+
+```bash
+MYSQL_ROOT_PASSWORD=your-secure-password
+REMOTE_SECRET_KEY=your-secret-key
+MCP_PORT=3001
+```
+
+**📖 For detailed Docker setup instructions, see [`docker/README.md`](./docker/README.md)**
 
 ### Run in remote mode
 

@@ -1,0 +1,12 @@
+# Docker ignore file for the docker directory
+node_modules
+npm-debug.log
+.env.local
+.env.test
+logs
+*.log
+.DS_Store
+.git
+.gitignore
+README.md
+docker-compose.override.yml

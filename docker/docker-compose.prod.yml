@@ -1,0 +1,51 @@
+version: '3.8'
+
+# Production overrides for docker-compose.yml
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  mcp-server:
+    restart: always
+    environment:
+      NODE_ENV: production
+      ENABLE_LOGGING: true
+      MYSQL_LOG_LEVEL: warn
+      # Use stronger secret in production
+      REMOTE_SECRET_KEY: ${REMOTE_SECRET_KEY:-change-this-in-production}
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  mysql:
+    restart: always
+    environment:
+      # Use secrets in production
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-simlexadmin}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mcppassword}
+    # Resource limits for MySQL
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Production MySQL configuration
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --innodb-buffer-pool-size=1G
+      --max-connections=200
+      --query-cache-type=1
+      --query-cache-size=64M
+
+  # Remove phpMyAdmin in production for security
+  phpmyadmin:
+    profiles:
+      - debug

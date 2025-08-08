@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: mcp-mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: simlexadmin
+      MYSQL_DATABASE: adcomat
+      MYSQL_USER: mcpuser
+      MYSQL_PASSWORD: mcppassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # MCP Server Service
+  mcp-server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: mcp-server-mysql
+    restart: unless-stopped
+    environment:
+      # MySQL Connection Settings
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASS: simlexadmin
+      MYSQL_DB: adcomat
+      
+      # Operation Permissions
+      ALLOW_INSERT_OPERATION: true
+      ALLOW_UPDATE_OPERATION: true
+      ALLOW_DELETE_OPERATION: true
+      ALLOW_DDL_OPERATION: true
+      
+      # Schema-specific permissions
+      SCHEMA_INSERT_PERMISSIONS: "adcomat:true,test_db:true"
+      SCHEMA_UPDATE_PERMISSIONS: "adcomat:true,test_db:true"
+      SCHEMA_DELETE_PERMISSIONS: "adcomat:false,test_db:false"
+      SCHEMA_DDL_PERMISSIONS: "adcomat:true,test_db:false"
+      
+      # Multi-DB mode settings
+      MULTI_DB_WRITE_MODE: true
+      
+      # SSL configuration
+      MYSQL_SSL: false
+      MYSQL_SSL_REJECT_UNAUTHORIZED: true
+      
+      # Performance settings
+      MYSQL_POOL_SIZE: 10
+      MYSQL_QUERY_TIMEOUT: 30000
+      MYSQL_CACHE_TTL: 60000
+      
+      # Security settings
+      MYSQL_RATE_LIMIT: 100
+      MYSQL_MAX_QUERY_COMPLEXITY: 1000
+      
+      # Monitoring settings
+      ENABLE_LOGGING: true
+      MYSQL_LOG_LEVEL: info
+      MYSQL_METRICS_ENABLED: false
+      
+      # Remote MCP configuration
+      IS_REMOTE_MCP: true
+      PORT: 3000
+      REMOTE_SECRET_KEY: docker-secret-key
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mcp-network
+    volumes:
+      - ../logs:/app/logs
+
+  # Optional: phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: mcp-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: simlexadmin
+      MYSQL_ROOT_PASSWORD: simlexadmin
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mcp-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  mcp-network:
+    driver: bridge
