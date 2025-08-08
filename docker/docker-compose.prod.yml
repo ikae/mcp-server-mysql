@@ -26,7 +26,7 @@ services:
     restart: always
     environment:
       # Use secrets in production
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-simlexadmin}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-mcppassword}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mcppassword}
     # Resource limits for MySQL
     deploy:

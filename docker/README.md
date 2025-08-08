@@ -28,8 +28,8 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ### 🗄️ MySQL Database
 - **Port**: `3306`
-- **Root Password**: `simlexadmin`
-- **Database**: `adcomat`
+- **Root Password**: `mcppassword`
+- **Database**: `db`
 - **User**: `mcpuser` / `mcppassword`
 
 ### 📊 MCP Server
@@ -41,7 +41,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 - **Port**: `8080`
 - **URL**: `http://localhost:8080`
 - **Username**: `root`
-- **Password**: `simlexadmin`
+- **Password**: `mcppassword`
 
 ## Configuration Files
 
