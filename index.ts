@@ -383,26 +383,16 @@ export default function createMcpServer({
 // This is for backward compatibility with the old way of running the server
 // Check if this module is the main module (directly executed)
 const isMainModule = () => {
-  // For ESM
-  if (typeof import.meta !== "undefined" && import.meta.url) {
-    try {
-      return (
-        import.meta.url.startsWith("file:") &&
-        process.argv[1] &&
-        import.meta.url === `file://${process.argv[1]}`
-      );
-    } catch (e) {
-      // Fall back to a simple check if import.meta causes issues
-      return false;
-    }
-  }
-  // Default fallback
-  return false;
+  return process.argv[1] && (
+    process.argv[1].endsWith('index.ts') ||
+    process.argv[1].endsWith('index.js') ||
+    process.argv[1].includes('index.ts')
+  );
 };
 
 // Start the server if this file is being run directly
-// if (isMainModule()) {
-if (true) {
+if (isMainModule()) {
+  // if (true) {
   log("info", "Running in standalone mode");
 
   // Start the server
